@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz | Capital Regulatorio Bancario</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0e17;
+  --surface:#111827;
+  --surface-2:#1a2236;
+  --border:rgba(99,130,255,0.12);
+  --accent:#3b82f6;
+  --accent-glow:rgba(59,130,246,0.25);
+  --emerald:#10b981;
+  --rose:#f43f5e;
+  --amber:#f59e0b;
+  --text:#e2e8f0;
+  --text-secondary:#94a3b8;
+  --text-muted:#64748b;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100dvh;
+  overflow-x:hidden;
+}
+h1,h2,h3,h4{font-family:'Space Grotesk',sans-serif;letter-spacing:-0.02em}
+
+/* Animated background */
+.bg-mesh{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 600px 400px at 20% 30%, rgba(59,130,246,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 500px 500px at 80% 70%, rgba(16,185,129,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 300px at 50% 50%, rgba(244,63,94,0.04) 0%, transparent 70%);
+  animation:meshDrift 12s ease-in-out infinite alternate;
+}
+@keyframes meshDrift{
+  0%{transform:scale(1) translate(0,0)}
+  100%{transform:scale(1.05) translate(-20px,15px)}
+}
+
+/* Floating particles */
+.particles{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.particle{
+  position:absolute;
+  width:3px;height:3px;
+  background:var(--accent);
+  border-radius:50%;
+  opacity:0;
+  animation:float-up linear infinite;
+}
+@keyframes float-up{
+  0%{opacity:0;transform:translateY(100vh) scale(0)}
+  10%{opacity:0.6}
+  90%{opacity:0.3}
+  100%{opacity:0;transform:translateY(-10vh) scale(1)}
+}
+
+.container{
+  position:relative;z-index:1;
+  max-width:680px;
+  margin:0 auto;
+  padding:2rem 1.25rem;
+}
+
+/* Welcome screen */
+.screen{display:none;animation:fadeUp 0.5s ease-out}
+.screen.active{display:block}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.logo-badge{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  padding:0.5rem 1rem;
+  border-radius:2rem;
+  background:var(--surface);
+  border:1px solid var(--border);
+  font-size:0.8rem;
+  color:var(--text-secondary);
+  margin-bottom:2rem;
+}
+.logo-badge .dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--emerald);
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.7)}}
+
+.hero-title{
+  font-size:clamp(2rem,5vw,3rem);
+  font-weight:700;
+  line-height:1.1;
+  margin-bottom:1rem;
+  background:linear-gradient(135deg,#e2e8f0 0%,#3b82f6 50%,#10b981 100%);
+  background-size:200% 200%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  animation:gradShift 4s ease-in-out infinite alternate;
+}
+@keyframes gradShift{0%{background-position:0% 50%}100%{background-position:100% 50%}}
+
+.hero-sub{
+  font-size:1.1rem;
+  color:var(--text-secondary);
+  line-height:1.6;
+  margin-bottom:2.5rem;
+  max-width:500px;
+}
+
+.input-group{margin-bottom:1.5rem}
+.input-group label{
+  display:block;
+  font-size:0.8rem;
+  font-weight:500;
+  color:var(--text-muted);
+  text-transform:uppercase;
+  letter-spacing:0.08em;
+  margin-bottom:0.5rem;
+}
+.input-group input{
+  width:100%;
+  padding:0.875rem 1rem;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:0.75rem;
+  color:var(--text);
+  font-size:1rem;
+  font-family:'DM Sans',sans-serif;
+  outline:none;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.input-group input:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-glow);
+}
+.input-group input::placeholder{color:var(--text-muted)}
+
+.btn-primary{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  padding:0.875rem 2rem;
+  background:var(--accent);
+  color:#fff;
+  font-family:'Space Grotesk',sans-serif;
+  font-weight:600;
+  font-size:1rem;
+  border:none;
+  border-radius:0.75rem;
+  cursor:pointer;
+  transition:all 0.2s;
+  position:relative;
+  overflow:hidden;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--accent-glow)}
+.btn-primary:active{transform:translateY(0) scale(0.98)}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed;transform:none}
+.btn-primary .arrow{transition:transform 0.2s}
+.btn-primary:hover .arrow{transform:translateX(4px)}
+
+/* Progress bar */
+.progress-wrap{
+  display:flex;align-items:center;gap:1rem;
+  margin-bottom:2rem;
+}
+.progress-bar{
+  flex:1;height:6px;
+  background:var(--surface);
+  border-radius:3px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--accent),var(--emerald));
+  border-radius:3px;
+  transition:width 0.5s cubic-bezier(0.16,1,0.3,1);
+}
+.progress-label{
+  font-size:0.8rem;
+  color:var(--text-muted);
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+
+/* Question card */
+.question-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:1.25rem;
+  padding:2rem;
+  animation:fadeUp 0.4s ease-out;
+}
+.q-number{
+  font-size:0.75rem;
+  font-weight:600;
+  color:var(--accent);
+  text-transform:uppercase;
+  letter-spacing:0.1em;
+  margin-bottom:0.75rem;
+}
+.q-text{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:1.25rem;
+  font-weight:600;
+  line-height:1.4;
+  margin-bottom:1.75rem;
+}
+
+/* Options */
+.options{display:flex;flex-direction:column;gap:0.75rem}
+.option{
+  display:flex;align-items:center;gap:1rem;
+  padding:1rem 1.25rem;
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:0.875rem;
+  cursor:pointer;
+  transition:all 0.2s;
+  position:relative;
+  overflow:hidden;
+}
+.option::before{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(59,130,246,0.05),transparent);
+  transform:translateX(-100%);
+  transition:transform 0.4s;
+}
+.option:hover{
+  border-color:rgba(59,130,246,0.3);
+  transform:translateX(4px);
+}
+.option:hover::before{transform:translateX(100%)}
+.option.selected{
+  border-color:var(--accent);
+  background:rgba(59,130,246,0.08);
+  box-shadow:0 0 0 1px var(--accent);
+}
+.option-letter{
+  width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:0.5rem;
+  background:rgba(255,255,255,0.05);
+  font-family:'Space Grotesk',sans-serif;
+  font-weight:600;
+  font-size:0.875rem;
+  color:var(--text-secondary);
+  flex-shrink:0;
+  transition:all 0.2s;
+}
+.option.selected .option-letter{
+  background:var(--accent);
+  color:#fff;
+}
+.option-text{font-size:0.95rem;line-height:1.4}
+
+/* Navigation */
+.q-nav{
+  display:flex;justify-content:flex-end;
+  margin-top:1.75rem;
+}
+
+/* Results screen */
+.result-card{
+  text-align:center;
+  padding:3rem 2rem;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:1.5rem;
+  position:relative;
+  overflow:hidden;
+}
+.result-card::before{
+  content:'';
+  position:absolute;top:-50%;left:-50%;
+  width:200%;height:200%;
+  background:conic-gradient(from 0deg,transparent,rgba(59,130,246,0.1),transparent,rgba(16,185,129,0.1),transparent);
+  animation:spin 8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.result-inner{position:relative;z-index:1}
+
+.score-ring{
+  width:160px;height:160px;
+  margin:0 auto 2rem;
+  position:relative;
+}
+.score-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.score-ring .track{fill:none;stroke:var(--surface-2);stroke-width:8}
+.score-ring .fill{
+  fill:none;stroke:var(--emerald);stroke-width:8;
+  stroke-linecap:round;
+  stroke-dasharray:440;
+  stroke-dashoffset:440;
+  transition:stroke-dashoffset 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s;
+}
+.score-ring .score-text{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+}
+.score-ring .score-num{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:2.5rem;
+  font-weight:700;
+}
+.score-ring .score-label{
+  font-size:0.8rem;
+  color:var(--text-muted);
+}
+
+.result-msg{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:1.5rem;
+  font-weight:600;
+  margin-bottom:0.5rem;
+}
+.result-sub{
+  color:var(--text-secondary);
+  font-size:0.95rem;
+  margin-bottom:2rem;
+}
+
+/* Review answers */
+.review{margin-top:2rem;text-align:left}
+.review-item{
+  padding:1rem 1.25rem;
+  border-radius:0.875rem;
+  margin-bottom:0.75rem;
+  border:1px solid var(--border);
+  background:var(--surface-2);
+}
+.review-q{font-size:0.85rem;color:var(--text-muted);margin-bottom:0.35rem}
+.review-a{font-size:0.95rem;display:flex;align-items:center;gap:0.5rem}
+
+/* Confetti */
+.confetti-container{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}
+.confetti-piece{
+  position:absolute;
+  width:10px;height:10px;
+  top:-20px;
+  animation:confetti-fall linear forwards;
+}
+@keyframes confetti-fall{
+  0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1}
+  100%{transform:translateY(100vh) rotate(720deg) scale(0.3);opacity:0}
+}
+
+/* Responsive */
+@media(max-width:480px){
+  .container{padding:1.25rem 1rem}
+  .question-card{padding:1.5rem 1.25rem}
+  .q-text{font-size:1.1rem}
+  .result-card{padding:2rem 1.25rem}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+<div class="particles" id="particles"></div>
+
+<div class="container">
+
+  <!-- SCREEN 1: Welcome -->
+  <div class="screen active" id="screen-welcome">
+    <div class="logo-badge">
+      <span class="dot"></span>
+      Capital Regulatorio Bancario
+    </div>
+    <h1 class="hero-title">Pon a prueba tus conocimientos</h1>
+    <p class="hero-sub">7 preguntas sobre capital, solvencia y riesgo bancario. Descubre cuanto sabes antes de empezar el curso.</p>
+    <div class="input-group">
+      <label>Tu nombre</label>
+      <input type="text" id="nameInput" placeholder="Ej: Maria Garcia" autocomplete="name">
+    </div>
+    <button class="btn-primary" id="startBtn" onclick="startQuiz()">
+      Comenzar quiz <span class="arrow">&rarr;</span>
+    </button>
+  </div>
+
+  <!-- SCREEN 2: Questions -->
+  <div class="screen" id="screen-quiz">
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="progress-label" id="progressLabel">1 / 7</span>
+    </div>
+    <div id="questionContainer"></div>
+  </div>
+
+  <!-- SCREEN 3: Results -->
+  <div class="screen" id="screen-results">
+    <div class="result-card">
+      <div class="result-inner">
+        <div class="score-ring">
+          <svg viewBox="0 0 160 160">
+            <circle class="track" cx="80" cy="80" r="70"/>
+            <circle class="fill" id="scoreCircle" cx="80" cy="80" r="70"/>
+          </svg>
+          <div class="score-text">
+            <span class="score-num" id="scoreNum">0</span>
+            <span class="score-label">de 7</span>
+          </div>
+        </div>
+        <div class="result-msg" id="resultMsg"></div>
+        <div class="result-sub" id="resultSub"></div>
+        <div class="review" id="reviewContainer"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="confetti-container" id="confetti"></div>
+
+<script>
+const SUPABASE_URL = 'https://bcicjjkgjgajxbrwmeyf.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJjaWNqamtnamdhanhicndtZXlmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxODU3ODIsImV4cCI6MjA4NDc2MTc4Mn0.BqgzIMTWvDIzbx1lofd7ZHYWt3FWjdpWc89kBaQGvrs';
+
+const questions = [
+  {
+    q: '&iquest;Que mide el coeficiente de capital de un banco?',
+    options: ['Su rentabilidad','Su liquidez','Su solvencia','Su tama&ntilde;o'],
+    correct: 2
+  },
+  {
+    q: '&iquest;Que significa Activos Ponderados por Riesgo?',
+    options: ['Activos totales del banco','El nivel de riesgo que asume el banco','Activos liquidos','Activos rentables'],
+    correct: 1
+  },
+  {
+    q: '&iquest;Que tiene a tu juicio mas riesgo?',
+    options: ['Un prestamo hipotecario','Un descubierto en cuenta corriente','Un prestamo de consumo','Depende'],
+    correct: 3
+  },
+  {
+    q: '&iquest;Cual de estos instrumentos de capital es mejor?',
+    options: ['Reservas','Una obligacion subordinada','Una participacion preferente','Los tres son iguales'],
+    correct: 0
+  },
+  {
+    q: '&iquest;Cual de los siguientes riesgos consume capital regulatorio?',
+    options: ['Riesgo reputacional','Riesgo de credito','Riesgo estrategico','Riesgo comercial'],
+    correct: 1
+  },
+  {
+    q: '&iquest;Cual es el riesgo que historicamente ha ocasionado mas crisis bancarias?',
+    options: ['Riesgo de mercado','Riesgo operacional','Riesgo de credito','Riesgo de liquidez'],
+    correct: 2
+  },
+  {
+    q: '&iquest;Cual es el objetivo principal del capital regulatorio?',
+    options: ['Maximizar beneficios','Reducir costes','Absorber perdidas y garantizar solvencia','Aumentar el volumen de credito'],
+    correct: 2
+  }
+];
+
+const letters = ['A','B','C','D'];
+let currentQ = 0;
+let answers = [];
+let participantName = '';
+
+function createParticles(){
+  const c = document.getElementById('particles');
+  for(let i=0;i<20;i++){
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random()*100+'%';
+    p.style.animationDuration = (8+Math.random()*12)+'s';
+    p.style.animationDelay = Math.random()*8+'s';
+    p.style.width = p.style.height = (2+Math.random()*3)+'px';
+    c.appendChild(p);
+  }
+}
+createParticles();
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz(){
+  const name = document.getElementById('nameInput').value.trim();
+  if(!name){
+    document.getElementById('nameInput').style.borderColor='var(--rose)';
+    document.getElementById('nameInput').focus();
+    return;
+  }
+  participantName = name;
+  currentQ = 0;
+  answers = [];
+  showScreen('screen-quiz');
+  renderQuestion();
+}
+
+document.getElementById('nameInput').addEventListener('keydown',e=>{
+  if(e.key==='Enter') startQuiz();
+  e.target.style.borderColor='var(--border)';
+});
+
+function renderQuestion(){
+  const q = questions[currentQ];
+  const pct = ((currentQ)/7*100);
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = `${currentQ+1} / 7`;
+
+  const container = document.getElementById('questionContainer');
+  container.innerHTML = `
+    <div class="question-card" key="${currentQ}">
+      <div class="q-number">Pregunta ${currentQ+1} de 7</div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">
+        ${q.options.map((opt,i)=>`
+          <div class="option" onclick="selectOption(${i})" data-idx="${i}">
+            <span class="option-letter">${letters[i]}</span>
+            <span class="option-text">${opt}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="q-nav">
+        <button class="btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>
+          ${currentQ===6?'Ver resultados':'Siguiente'} <span class="arrow">&rarr;</span>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function selectOption(idx){
+  answers[currentQ] = idx;
+  document.querySelectorAll('.option').forEach(o=>{
+    o.classList.toggle('selected', parseInt(o.dataset.idx)===idx);
+  });
+  document.getElementById('nextBtn').disabled = false;
+}
+
+function nextQuestion(){
+  if(answers[currentQ]===undefined) return;
+  if(currentQ < 6){
+    currentQ++;
+    renderQuestion();
+  } else {
+    submitQuiz();
+  }
+}
+
+async function submitQuiz(){
+  const score = answers.reduce((acc,a,i)=> acc + (a===questions[i].correct?1:0), 0);
+
+  const payload = {
+    participant_name: participantName,
+    answers: Object.fromEntries(answers.map((a,i)=>['q'+(i+1), letters[a]])),
+    score: score
+  };
+
+  try{
+    await fetch(SUPABASE_URL+'/rest/v1/quiz_responses', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization':'Bearer '+SUPABASE_KEY,
+        'Prefer':'return=minimal'
+      },
+      body: JSON.stringify(payload)
+    });
+  }catch(e){console.error('Error saving:',e)}
+
+  showResults(score);
+}
+
+function showResults(score){
+  showScreen('screen-results');
+
+  const circle = document.getElementById('scoreCircle');
+  setTimeout(()=>{
+    circle.style.strokeDashoffset = 0;
+    circle.style.stroke = 'var(--accent)';
+  },100);
+
+  document.getElementById('scoreNum').innerHTML = '&#10003;';
+  document.querySelector('.score-label').textContent = 'Enviado';
+
+  document.getElementById('resultMsg').textContent = 'Quiz completado';
+  document.getElementById('resultSub').textContent = `Gracias ${participantName}. Las respuestas correctas se revelaran durante el curso.`;
+
+  const review = document.getElementById('reviewContainer');
+  review.innerHTML = '<h4 style="font-size:1rem;margin-bottom:1rem;color:var(--text-secondary)">Tus respuestas</h4>' +
+    '<p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:1rem">Las respuestas correctas se revelaran durante el curso.</p>' +
+    answers.map((a,i)=>{
+      return `
+        <div class="review-item" style="border-left:3px solid var(--accent)">
+          <div class="review-q">P${i+1}: ${questions[i].q}</div>
+          <div class="review-a">
+            Tu respuesta: <strong>${letters[a]}) ${questions[i].options[a]}</strong>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+  launchConfetti();
+  document.getElementById('progressFill').style.width = '100%';
+}
+
+function launchConfetti(){
+  const container = document.getElementById('confetti');
+  const colors = ['#3b82f6','#10b981','#f59e0b','#f43f5e','#8b5cf6','#06b6d4'];
+  for(let i=0;i<60;i++){
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    piece.style.left = Math.random()*100+'%';
+    piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+    piece.style.animationDuration = (2+Math.random()*3)+'s';
+    piece.style.animationDelay = Math.random()*0.8+'s';
+    piece.style.borderRadius = Math.random()>0.5?'50%':'2px';
+    piece.style.width = (6+Math.random()*8)+'px';
+    piece.style.height = (6+Math.random()*8)+'px';
+    container.appendChild(piece);
+  }
+  setTimeout(()=>container.innerHTML='',5000);
+}
+
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('screen-quiz').classList.contains('active')){
+    const key = e.key.toUpperCase();
+    const idx = ['A','B','C','D'].indexOf(key);
+    if(idx!==-1) selectOption(idx);
+    if(e.key==='Enter' && answers[currentQ]!==undefined) nextQuestion();
+  }
+});
+</script>
+</body>
+</html>
